@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% from "_macros.html" import job_card, logo %}
+{% block content %}
+<section class="hero">
+  <div class="wrap">
+    <h1 class="hero__title">Toutes les offres d'emploi en Tunisie,<br>au même endroit.</h1>
+    <p class="hero__lead">
+      {{ stats.active_jobs|fmt_int }} offres actives de {{ stats.hiring_companies|fmt_int }} entreprises,
+      collectées sur {{ stats.active_sources }} sources et mises à jour toutes les deux heures.
+    </p>
+    <form class="searchbar" action="/emplois" method="get" role="search">
+      <label class="sr-only" for="hq">Mots-clés</label>
+      <input id="hq" name="q" type="search" placeholder="Poste, compétence, entreprise…" autocomplete="off">
+      <label class="sr-only" for="hg">Gouvernorat</label>
+      <select id="hg" name="governorate">
+        <option value="">Toute la Tunisie</option>
+        {% for slug, name in governorate_choices %}<option value="{{ slug }}">{{ name }}</option>{% endfor %}
+      </select>
+      <button type="submit" class="btn btn--primary">Rechercher</button>
+    </form>
+    {% if domains %}
+    <p class="hero__quick">
+      Populaires :
+      {% for d in domains[:5] %}<a href="/emplois?domain={{ d.value }}">{{ d.label }}</a>{% endfor %}
+    </p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="wrap stats" aria-label="Statistiques">
+  <div class="stat"><span class="stat__n">{{ stats.active_jobs|fmt_int }}</span><span class="stat__l">offres actives</span></div>
+  <div class="stat"><span class="stat__n">{{ stats.new_7d|fmt_int }}</span><span class="stat__l">publiées cette semaine</span></div>
+  <div class="stat"><span class="stat__n">{{ stats.hiring_companies|fmt_int }}</span><span class="stat__l">entreprises qui recrutent</span></div>
+  <div class="stat"><span class="stat__n">{{ stats.companies|fmt_int }}</span><span class="stat__l">entreprises référencées</span></div>
+</section>
+
+<section class="wrap section">
+  <div class="section__head">
+    <h2>Dernières offres</h2>
+    <a class="more" href="/emplois">Toutes les offres →</a>
+  </div>
+  {% if latest %}
+    <div class="joblist">{% for j in latest %}{{ job_card(j) }}{% endfor %}</div>
+  {% else %}
+    <p class="empty">Aucune offre pour le moment : la première collecte est peut-être en cours.</p>
+  {% endif %}
+</section>
+
+{% if domains %}
+<section class="wrap section">
+  <div class="section__head"><h2>Parcourir par domaine</h2></div>
+  <div class="cats">
+    {% for d in domains %}
+    <a class="cat" href="/emplois?domain={{ d.value }}">
+      <span class="cat__label">{{ d.label }}</span>
+      <span class="cat__n">{{ d.count|fmt_int }} offre{{ 's' if d.count > 1 }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if companies %}
+<section class="wrap section">
+  <div class="section__head">
+    <h2>Entreprises qui recrutent</h2>
+    <a class="more" href="/entreprises">Annuaire →</a>
+  </div>
+  <div class="companies">
+    {% for c in companies %}
+    <a class="company" href="/entreprises/{{ c.slug }}">
+      {{ logo(c) }}
+      <span class="company__name">{{ c.name }}</span>
+      <span class="company__n">{{ c.active_jobs_count }} offre{{ 's' if c.active_jobs_count > 1 }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if governorates %}
+<section class="wrap section">
+  <div class="section__head"><h2>Emploi par gouvernorat</h2></div>
+  <div class="govs">
+    {% for g in governorates %}
+      <a class="gov" href="/emplois?governorate={{ g.value }}"><span>{{ g.label }}</span><span class="gov__n">{{ g.count }}</span></a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

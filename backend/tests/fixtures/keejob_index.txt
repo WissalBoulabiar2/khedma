@@ -1,0 +1,30 @@
+# Keejob : offres d'emploi actives en Tunisie
+
+> 895 offres actives au 2026-11-07, des plus récentes aux plus anciennes. Chaque lien pointe vers le détail de l'offre en Markdown. Les offres en télétravail ou en mode hybride sont signalées.
+
+- [Infrastructure & Security Officer](https://www.keejob.com/offres-emploi/249659/infrastructure-security-officer.md): BANK ABC · Tunis, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Technicien de laboratoire](https://www.keejob.com/offres-emploi/249656/technicien-de-laboratoire.md): UNIFOOD · Hammam Zriba, Zaghouan, Tunisie · CDI, CDD, SIVP · Sur site · publiée le 2026-11-07
+- [Technicien supérieur en maintenance indus](https://www.keejob.com/offres-emploi/249655/technicien-sup%C3%A9rieur-en-maintenance-indus.md): UNIFOOD · Hammam Zriba, Zaghouan, Tunisie · CDD · Sur site · publiée le 2026-11-07
+- [Ingénieur de production](https://www.keejob.com/offres-emploi/249654/ing%C3%A9nieur-de-production.md): UNIFOOD · Hammam Zriba, Zaghouan, Tunisie · CDD · Sur site · publiée le 2026-11-07
+- [Responsable de maintenance](https://www.keejob.com/offres-emploi/249653/responsable-de-maintenance.md): UNIFOOD · Hammam Zriba, Zaghouan, Tunisie · CDD · Sur site · publiée le 2026-11-07
+- [Responsable Administratif et Financier](https://www.keejob.com/offres-emploi/249652/responsable-administratif-et-financier.md): UNIFOOD · Hammam Zriba, Zaghouan, Tunisie · CDI, CDD · publiée le 2026-11-07
+- [TECHNICIENS DE MAINTENANCE](https://www.keejob.com/offres-emploi/249650/techniciens-de-maintenance.md): DICK ELEVAGE GROUPE POULINA · Ben Arous, Tunisie · CDI, SIVP · Sur site · publiée le 2026-11-07
+- [Responsable COMEX](https://www.keejob.com/offres-emploi/249646/responsable-comex.md): ALMES MATEUR · Bizerte, Tunisie · CDI, SIVP · publiée le 2026-11-07
+- [Développeur Web FullStack (.NET) à Sousse](https://www.keejob.com/offres-emploi/249641/d%C3%A9veloppeur-web-fullstack-net-%C3%A0-sousse.md): CISA INFORMATIQUE · Hammam Sousse, Sousse, Tunisie · CDI · publiée le 2026-11-07
+- [Développeur applications mobiles (H/F) Sousse](https://www.keejob.com/offres-emploi/249640/d%C3%A9veloppeur-applications-mobiles-hf-sousse.md): CISA INFORMATIQUE · Sousse Riadh, Sousse, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Ingénieur Process](https://www.keejob.com/offres-emploi/249639/ing%C3%A9nieur-process.md): DELICE DANONE STIAL · Soliman, Nabeul, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Technicien en Génie Mécanique](https://www.keejob.com/offres-emploi/249638/conducteur-de-machine-g%C3%A9nie-m%C3%A9canique.md): DELICE DANONE STIAL · Soliman, Nabeul, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Ingénieur d’études hydraulique](https://www.keejob.com/offres-emploi/249637/ing%C3%A9nieur-d%C3%A9tudes-hydraulique.md): GROUPE MABROUKA · Ben Arous, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Technicien Développement Galénique](https://www.keejob.com/offres-emploi/249631/technicien-d%C3%A9veloppement-gal%C3%A9nique.md): LABORATOIRE THERA · El Hrairia, Tunis, Tunisie · CDI, SIVP · Sur site · publiée le 2026-11-07
+- [Chargé(e) Clientèle\_Kairouan Mobile](https://www.keejob.com/offres-emploi/249623/charg%C3%A9e-client%C3%A8le_kairouan-mobile.md): ADVANS TUNISIE\_INSTITUTION DE MICROFINANCE · Kairouan, Tunisie · CDI, SIVP · Sur site · publiée le 2026-11-07
+- [Chargé(e) Clientèle\_Kairouan](https://www.keejob.com/offres-emploi/249622/charg%C3%A9e-client%C3%A8le_kairouan.md): ADVANS TUNISIE\_INSTITUTION DE MICROFINANCE · Kairouan, Tunisie · CDI, SIVP · Sur site · publiée le 2026-11-07
+- [Responsable facturation](https://www.keejob.com/offres-emploi/249617/responsable-facturation.md): KILANI GROUP · Tunis, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Hotliner (H/F)](https://www.keejob.com/offres-emploi/249613/hotliner-hf.md): GROUP BENETEAU TUNISIE · Bizerte, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Responsable Fabrication (France)](https://www.keejob.com/offres-emploi/249601/responsable-fabrication-france.md): PARTNER RECRUITMENT · France, France · CDI · Sur site · publiée le 2026-11-07
+- [Agents Back-office](https://www.keejob.com/offres-emploi/249588/agents-back-office.md): OUTSOURCIA · Tunis, Ariana, Tunisie · CDI · publiée le 2026-11-07
+- [Responsable Commerciale, Logistique & Admin](https://www.keejob.com/offres-emploi/249579/responsable-commerciale-logistique-admin.md): PARTNER RECRUITMENT · Tunis, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Préparateur(trice) de véhicules neufs (PDI)](https://www.keejob.com/offres-emploi/249480/pr%C3%A9parateurtrice-de-v%C3%A9hicules-neufs-pdi.md): KILANI GROUP · Tunis, Tunisie · CDI · Sur site · publiée le 2026-11-07
+- [Superviseur Travaux Génie Civil (Mauritanie)](https://www.keejob.com/offres-emploi/249427/superviseur-travaux-g%C3%A9nie-civil-mauritanie.md): PARTNER RECRUITMENT · Nouadhibou, Mauritanie · CDD · Sur site · publiée le 2026-11-07
+- [Ingénieur Géotechnicien Senior (Mauritanie)](https://www.keejob.com/offres-emploi/249426/ing%C3%A9nieur-g%C3%A9otechnicien-senior-mauritanie.md): PARTNER RECRUITMENT · Nouadhibou, Mauritanie · CDD · Sur site · publiée le 2026-11-07
+- [Ingénieur Fluides Senior (Mauritanie)](https://www.keejob.com/offres-emploi/249418/ing%C3%A9nieur-fluides-senior-mauritanie.md): PARTNER RECRUITMENT · Nouadhibou, Mauritanie · CDD · Sur site · publiée le 2026-11-07
+- [Chargé Relation Client / Gestion Commerciale](https://www.keejob.com/offres-emploi/249413/charg%C3%A9-relation-client-gestion-commerciale.md): PARTNER RECRUITMENT · Tunis, Tunisie · publiée le 2026-11-07

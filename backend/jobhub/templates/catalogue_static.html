@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Offres d'emploi en Tunisie | {{ SITE_NAME }}{% endblock %}
+{% block head %}<script defer src="/static/js/catalogue.js?v={{ build_id }}"></script>{% endblock %}
+{% block content %}
+<div class="wrap catalogue" id="catalogue" data-base="{{ base_path }}" data-build="{{ build_id }}">
+  <form id="filters" class="catalogue__search" action="/emplois" method="get" role="search" data-client>
+    <div class="searchbar searchbar--compact">
+      <label class="sr-only" for="q">Mots-clés</label>
+      <input id="q" name="q" type="search" placeholder="Poste, compétence, entreprise…" autocomplete="off">
+      <button type="submit" class="btn btn--primary">Rechercher</button>
+    </div>
+    <button type="button" class="btn btn--ghost filters-toggle" aria-controls="facets" aria-expanded="false">Filtres</button>
+  </form>
+
+  <div class="catalogue__grid">
+    <aside id="facets" class="facets" aria-label="Filtres">
+      <div class="facets__head"><h2>Filtrer</h2><a href="/emplois" id="clear-all" hidden>Tout effacer</a></div>
+      <div id="facet-body"><p class="muted small">Chargement…</p></div>
+    </aside>
+
+    <section class="results" aria-live="polite">
+      <div class="results__bar">
+        <p class="results__count" id="count">&nbsp;</p>
+        <label class="sort">Trier :
+          <select id="sort"><option value="recent">Plus récentes</option><option value="relevance">Pertinence</option></select>
+        </label>
+      </div>
+      <ul class="chips" id="chips" aria-label="Filtres actifs"></ul>
+      <div class="joblist" id="results"></div>
+      <nav class="pager" id="pager" aria-label="Pagination"></nav>
+      <noscript><div class="empty">La recherche nécessite JavaScript. Vous pouvez aussi parcourir les offres depuis
+        <a href="/">l'accueil</a> ou l'<a href="/entreprises">annuaire des entreprises</a>.</div></noscript>
+    </section>
+  </div>
+</div>
+{% endblock %}

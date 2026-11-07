@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% from "_macros.html" import job_card %}
+{% set p = request.query_params %}
+{% block title %}{% if q.q %}{{ q.q }} — {% endif %}{% if q.domain %}{{ DOMAIN_LABELS[q.domain] }} — {% endif %}Offres d'emploi{% if q.governorate %} à {{ GOVERNORATES[q.governorate] }}{% else %} en Tunisie{% endif %} | {{ SITE_NAME }}{% endblock %}
+{% block head %}{% if p.get('page') and p.get('page') != '1' or q.q %}<meta name="robots" content="noindex,follow">{% endif %}{% endblock %}
+{% block content %}
+<div class="wrap catalogue">
+  <form id="filters" class="catalogue__search" action="/emplois" method="get" role="search">
+    <div class="searchbar searchbar--compact">
+      <label class="sr-only" for="q">Mots-clés</label>
+      <input id="q" name="q" type="search" value="{{ q.q or '' }}" placeholder="Poste, compétence, entreprise…" autocomplete="off">
+      <button type="submit" class="btn btn--primary">Rechercher</button>
+    </div>
+    <button type="button" class="btn btn--ghost filters-toggle" aria-controls="facets" aria-expanded="false">Filtres{% if chips %} ({{ chips|length }}){% endif %}</button>
+  </form>
+
+  <div class="catalogue__grid">
+    <aside id="facets" class="facets" aria-label="Filtres">
+      <div class="facets__head">
+        <h2>Filtrer</h2>
+        {% if chips %}<a href="/emplois{% if q.q %}?q={{ q.q|urlencode }}{% endif %}">Tout effacer</a>{% endif %}
+      </div>
+
+      {% if q.company %}<input type="hidden" form="filters" name="company" value="{{ q.company }}">{% endif %}
+
+      <div class="facet">
+        <label for="f-domain" class="facet__title">Domaine</label>
+        <select id="f-domain" name="domain" form="filters" data-autosubmit data-clears="specialization">
+          <option value="">Tous les domaines</option>
+          {% for f in res.facets.domain %}<option value="{{ f.value }}" {% if q.domain == f.value %}selected{% endif %}>{{ f.label }} ({{ f.count }})</option>{% endfor %}
+          {% if q.domain and not res.facets.domain|selectattr('value', 'equalto', q.domain)|list %}<option value="{{ q.domain }}" selected>{{ DOMAIN_LABELS[q.domain] }} (0)</option>{% endif %}
+        </select>
+      </div>
+
+      {% if q.domain %}
+      <div class="facet">
+        <label for="f-spec" class="facet__title">Spécialité</label>
+        <select id="f-spec" name="specialization" form="filters" data-autosubmit>
+          <option value="">Toutes les spécialités</option>
+          {% for f in res.facets.specialization %}<option value="{{ f.value }}" {% if q.specialization == f.value %}selected{% endif %}>{{ f.label }} ({{ f.count }})</option>{% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+      <div class="facet">
+        <label for="f-gov" class="facet__title">Gouvernorat</label>
+        <select id="f-gov" name="governorate" form="filters" data-autosubmit data-clears="city">
+          <option value="">Toute la Tunisie</option>
+          {% set counts = {} %}
+          {% for f in res.facets.governorate %}{% set _ = counts.update({f.value: f.count}) %}{% endfor %}
+          {% for slug, name in governorate_choices %}<option value="{{ slug }}" {% if q.governorate == slug %}selected{% endif %}>{{ name }}{% if counts.get(slug) %} ({{ counts[slug] }}){% endif %}</option>{% endfor %}
+        </select>
+      </div>
+
+      {% if q.governorate and res.facets.city %}
+      <div class="facet">
+        <label for="f-city" class="facet__title">Ville</label>
+        <select id="f-city" name="city" form="filters" data-autosubmit>
+          <option value="">Toutes les villes</option>
+          {% for f in res.facets.city %}<option value="{{ f.value }}" {% if q.city == f.value %}selected{% endif %}>{{ f.label }} ({{ f.count }})</option>{% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+      {% macro checks(name, title, facet, labels, selected) %}
+      <fieldset class="facet">
+        <legend class="facet__title">{{ title }}</legend>
+        {% set counts = {} %}
+        {% for f in facet %}{% set _ = counts.update({f.value: f.count}) %}{% endfor %}
+        {% for value, label in labels.items() %}
+          {% if counts.get(value) or value in selected %}
+          <label class="check"><input type="checkbox" name="{{ name }}" value="{{ value }}" form="filters" data-autosubmit {% if value in selected %}checked{% endif %}>
+            <span>{{ label }}</span><span class="check__n">{{ counts.get(value, 0) }}</span></label>
+          {% endif %}
+        {% endfor %}
+        {% if not counts and not selected %}<p class="muted small">Aucune information</p>{% endif %}
+      </fieldset>
+      {% endmacro %}
+
+      {{ checks('contract', 'Type de contrat', res.facets.contract, CONTRACT_TYPES, q.contract) }}
+      {{ checks('experience', "Niveau d'expérience", res.facets.experience, EXPERIENCE_LEVELS, q.experience) }}
+      {{ checks('workplace', 'Mode de travail', res.facets.workplace, WORKPLACES, q.workplace) }}
+
+      <fieldset class="facet">
+        <legend class="facet__title">Date de publication</legend>
+        <label class="check"><input type="radio" name="posted_within" value="" form="filters" data-autosubmit {% if not q.posted_within %}checked{% endif %}><span>Toutes les dates</span></label>
+        {% for value, label in POSTED_WITHIN.items() %}
+          <label class="check"><input type="radio" name="posted_within" value="{{ value }}" form="filters" data-autosubmit {% if q.posted_within == value %}checked{% endif %}><span>{{ label }}</span></label>
+        {% endfor %}
+      </fieldset>
+
+      <noscript><button type="submit" form="filters" class="btn btn--primary btn--block">Appliquer les filtres</button></noscript>
+    </aside>
+
+    <section class="results" aria-live="polite">
+      <div class="results__bar">
+        <p class="results__count"><strong>{{ res.total|fmt_int }}</strong> offre{{ 's' if res.total != 1 }}</p>
+        <label class="sort">Trier :
+          <select name="sort" form="filters" data-autosubmit>
+            {% for value, label in SORTS.items() %}{% if value == 'recent' or q.q %}<option value="{{ value }}" {% if q.sort == value %}selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}
+          </select>
+        </label>
+      </div>
+
+      {% if chips %}
+      <ul class="chips" aria-label="Filtres actifs">
+        {% for label, href in chips %}<li><a class="chip" href="{{ href }}" aria-label="Retirer le filtre {{ label }}">{{ label }} <span aria-hidden="true">×</span></a></li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if res.jobs %}
+        <div class="joblist">{% for j in res.jobs %}{{ job_card(j) }}{% endfor %}</div>
+        {% if res.pages > 1 %}
+        <nav class="pager" aria-label="Pagination">
+          {% if res.page > 1 %}<a href="{{ url_with(p, page=res.page - 1) }}" rel="prev">← Précédent</a>{% else %}<span></span>{% endif %}
+          <span>Page {{ res.page }} sur {{ res.pages }}</span>
+          {% if res.page < res.pages %}<a href="{{ url_with(p, page=res.page + 1) }}" rel="next">Suivant →</a>{% else %}<span></span>{% endif %}
+        </nav>
+        {% endif %}
+      {% else %}
+        <div class="empty">
+          <p><strong>Aucune offre ne correspond à ces critères.</strong></p>
+          <p>Essayez de retirer un filtre ou d'utiliser des mots-clés plus généraux.</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

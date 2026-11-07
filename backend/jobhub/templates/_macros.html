@@ -1,0 +1,27 @@
+{% macro logo(company, size='md') -%}
+  {%- if company and company.logo_url -%}
+    <span class="logo logo--{{ size }}"><img src="{{ company.logo_url }}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('logo--fallback');this.remove()"><span class="logo__txt">{{ company.name|initials }}</span></span>
+  {%- else -%}
+    <span class="logo logo--{{ size }} logo--fallback"><span class="logo__txt">{{ (company.name if company else '?')|initials }}</span></span>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro job_card(job, show_company=True) -%}
+<article class="job">
+  {% if show_company %}{{ logo(job.company) }}{% endif %}
+  <div class="job__body">
+    <h3 class="job__title"><a href="/emplois/{{ job.id }}-{{ job.slug }}">{{ job.title }}</a></h3>
+    <p class="job__meta">
+      {% if show_company %}<span class="job__company">{{ job.company.name if job.company else 'Entreprise confidentielle' }}</span>{% endif %}
+      <span class="dot">{{ job.location_label }}</span>
+    </p>
+    <p class="tags">
+      {% for c in job.contract_list %}<span class="tag tag--contract">{{ CONTRACT_TYPES[c] }}</span>{% endfor %}
+      {% if job.workplace and job.workplace != 'sur-site' %}<span class="tag tag--remote">{{ WORKPLACES[job.workplace] }}</span>{% endif %}
+      {% if job.experience_level %}<span class="tag">{{ EXPERIENCE_LEVELS[job.experience_level].split(' (')[0] }}</span>{% endif %}
+      <span class="tag tag--quiet">{{ SPECIALIZATION_LABELS.get(job.specialization, '') if job.specialization != 'autre' else DOMAIN_LABELS[job.domain] }}</span>
+    </p>
+  </div>
+  <time class="job__date" datetime="{{ job.sort_date.isoformat() }}">{{ job.sort_date|reldate }}</time>
+</article>
+{%- endmacro %}

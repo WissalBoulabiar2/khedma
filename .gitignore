@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/data/
+*.log
+*.db
+*.db-wal
+*.db-shm

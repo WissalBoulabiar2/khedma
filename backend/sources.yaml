@@ -1,0 +1,130 @@
+# Source registry.
+#
+# Each entry is one source = one collector `type` + its `options`.
+# Add a source of an existing type by adding an entry here; no code needed.
+# Available types: keejob, farojob, jsonld, workable_search, greenhouse,
+#                  lever, recruitee, ashby, smartrecruiters, workable_account
+#
+# Before enabling a source, check its robots.txt and terms of use. Every
+# request goes through the polite fetcher (robots.txt, rate limiting,
+# anti-bot detection), but the terms of use must be checked by a person.
+#
+# Fields: key (stable id), name, type, homepage, enabled, notes,
+#         disabled_reason (shown on the /sources page), max_details (detail
+#         pages fetched per run, default 300), options (type-specific).
+
+sources:
+  # ---------------------------------------------------------- Tunisian job boards
+  - key: keejob
+    name: Keejob
+    type: keejob
+    homepage: https://www.keejob.com
+    enabled: true
+    max_details: 400
+    notes: >
+      Uses the machine-readable documents Keejob publishes for automated readers
+      (llms-full.txt index of active offers + .md detail per offer).
+
+  - key: tunisietravail
+    name: Tunisie Travail
+    type: jsonld
+    homepage: https://www.tunisietravail.net
+    enabled: true
+    max_details: 150
+    options:
+      feed_url: https://www.tunisietravail.net/feed/
+      # Results / admitted-candidates lists are not offers. (Public-sector
+      # "concours" that carry JobPosting markup are real openings and are kept.)
+      title_exclude_pattern: "^(r[ée]sultats?|liste des|listes? d)"
+      content_xpath: '//div[contains(@class,"PostContent")]'
+      country: TN
+    notes: robots.txt allows all; offers carry schema.org JobPosting markup.
+
+  - key: farojob
+    name: Farojob
+    type: farojob
+    homepage: https://www.farojob.net
+    enabled: true
+    max_details: 80
+    options:
+      max_pages: 3
+    notes: Public listing and detail pages. Its RSS feed is disallowed by robots.txt, so it is not used.
+
+  - key: tanitjobs
+    name: Tanitjobs
+    type: jsonld
+    homepage: https://www.tanitjobs.com
+    enabled: false
+    disabled_reason: >
+      Terms of use only permit downloading one copy of the content for personal, non-commercial use.
+    options:
+      listing_urls: [https://www.tanitjobs.com/jobs/]
+
+  - key: emploitunisie
+    name: Emploi Tunisie
+    type: jsonld
+    homepage: https://www.emploitunisie.com
+    enabled: false
+    disabled_reason: The site serves an anti-bot challenge (Cloudflare) to automated clients. We do not bypass it.
+    options:
+      listing_urls: [https://www.emploitunisie.com/recherche-jobs-tunisie]
+
+  - key: optioncarriere
+    name: Optioncarriere
+    type: jsonld
+    homepage: https://www.optioncarriere.tn
+    enabled: false
+    disabled_reason: robots.txt disallows offer pages (/job/, /jobview/). The site is itself an aggregator.
+    options:
+      listing_urls: [https://www.optioncarriere.tn/]
+
+  # ------------------------------------------------- Multi-company ATS networks
+  - key: workable-tn
+    name: Workable (Tunisia)
+    type: workable_search
+    homepage: https://jobs.workable.com
+    enabled: true
+    options:
+      location: Tunisia
+    notes: Offers from every company using Workable, located in Tunisia. robots.txt declares Content-Signal search=yes.
+
+  # ------------------------------------------- Company career boards (public ATS APIs)
+  - key: lever-yassir
+    name: Yassir
+    type: lever
+    homepage: https://yassir.com
+    enabled: true
+    options: {board: Yassir, company: Yassir, website: https://yassir.com}
+
+  - key: recruitee-ozeol
+    name: Ozeol
+    type: recruitee
+    homepage: https://ozeol.recruitee.com
+    enabled: true
+    options: {board: ozeol, company: Ozeol}
+
+  - key: greenhouse-sesamm
+    name: SESAMm
+    type: greenhouse
+    homepage: https://www.sesamm.com
+    enabled: true
+    options: {board: sesamm, company: SESAMm, website: https://www.sesamm.com}
+    notes: Has a Tunis office. Only Tunisia-located offers are kept.
+
+  - key: greenhouse-alxafrica
+    name: ALX Africa
+    type: greenhouse
+    homepage: https://www.alxafrica.com
+    enabled: true
+    options: {board: alxafrica, company: ALX Africa, website: https://www.alxafrica.com}
+    notes: Runs a Tunis hub. Only Tunisia-located offers are kept.
+
+  - key: smartrecruiters-devoteam
+    name: Devoteam
+    type: smartrecruiters
+    homepage: https://www.devoteam.com
+    enabled: false
+    disabled_reason: >
+      api.smartrecruiters.com/robots.txt disallows every user-agent except LinkedInBot.
+      The adapter is ready if this changes.
+    options: {board: Devoteam, company: Devoteam}

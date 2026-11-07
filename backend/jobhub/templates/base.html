@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ SITE_NAME }} — Offres d'emploi en Tunisie{% endblock %}</title>
+  <meta name="description" content="{% block description %}Toutes les offres d'emploi en Tunisie réunies en un seul endroit : sites d'emploi tunisiens, pages carrières et plateformes de recrutement, mises à jour toutes les deux heures.{% endblock %}">
+  {% block head %}{% endblock %}
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c8102e'/%3E%3Cpath d='M10 9v14M10 16l8-7M12.5 14l6.5 9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/css/app.css?v=1">
+  <script defer src="/static/js/app.js?v=1"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Aller au contenu</a>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="/" aria-label="{{ SITE_NAME }}, accueil">
+        <span class="brand__mark" aria-hidden="true">K</span>
+        <span class="brand__name">{{ SITE_NAME }}</span>
+      </a>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="/emplois" {% if request.url.path.startswith('/emplois') %}aria-current="page"{% endif %}>Offres d'emploi</a>
+        <a href="/entreprises" {% if request.url.path.startswith('/entreprises') %}aria-current="page"{% endif %}>Entreprises</a>
+        <a href="/sources" {% if request.url.path.startswith('/sources') %}aria-current="page"{% endif %}>Sources</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div>
+        <strong>{{ SITE_NAME }}</strong> rassemble des offres d'emploi publiques publiées en Tunisie.
+        Nous ne recrutons pas et ne recevons pas de candidatures : chaque offre renvoie vers son annonce d'origine.
+      </div>
+      <div class="footer__links">
+        <a href="/emplois">Offres</a>
+        <a href="/entreprises">Entreprises</a>
+        <a href="/sources">Sources et méthode</a>
+        {% if static_mode %}<a href="/data/jobs.json">Données (JSON)</a>{% else %}<a href="/api/docs">API</a>{% endif %}
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

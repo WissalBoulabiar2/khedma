@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "_macros.html" import logo %}
+{% block title %}Entreprises qui recrutent en Tunisie | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="wrap page">
+  <h1>Entreprises</h1>
+  {% if static_mode %}
+  <div class="toolbar">
+    <div class="searchbar searchbar--compact">
+      <label class="sr-only" for="cq">Nom de l'entreprise</label>
+      <input id="cq" type="search" placeholder="Filtrer par nom…" data-company-filter autocomplete="off">
+    </div>
+  </div>
+  <p class="muted"><span id="company-count">{{ total|fmt_int }}</span> entreprise{{ 's' if total != 1 }} qui recrute{{ 'nt' if total != 1 }}</p>
+  {% else %}
+  <form class="toolbar" action="/entreprises" method="get" role="search">
+    <div class="searchbar searchbar--compact">
+      <label class="sr-only" for="cq">Nom de l'entreprise</label>
+      <input id="cq" type="search" name="q" value="{{ q }}" placeholder="Nom de l'entreprise…">
+      <button class="btn btn--primary" type="submit">Chercher</button>
+    </div>
+    <label class="check"><input type="checkbox" name="tous" value="1" data-autosubmit {% if show_all %}checked{% endif %}><span>Inclure les entreprises sans offre active</span></label>
+  </form>
+  <p class="muted">{{ total|fmt_int }} entreprise{{ 's' if total != 1 }}</p>
+  {% endif %}
+
+  {% if companies %}
+  <div class="companies companies--dir">
+    {% for c in companies %}
+    <a class="company" href="/entreprises/{{ c.slug }}" data-name="{{ c.key }}">
+      {{ logo(c) }}
+      <span class="company__name">{{ c.name }}</span>
+      <span class="company__n">{% if c.active_jobs_count %}{{ c.active_jobs_count }} offre{{ 's' if c.active_jobs_count > 1 }}{% else %}Aucune offre active{% endif %}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% if pages > 1 %}
+  <nav class="pager" aria-label="Pagination">
+    {% set base = '/entreprises?' ~ ('q=' ~ q|urlencode ~ '&' if q else '') ~ ('tous=1&' if show_all else '') %}
+    {% if page > 1 %}<a href="{{ base }}page={{ page - 1 }}" rel="prev">← Précédent</a>{% else %}<span></span>{% endif %}
+    <span>Page {{ page }} sur {{ pages }}</span>
+    {% if page < pages %}<a href="{{ base }}page={{ page + 1 }}" rel="next">Suivant →</a>{% else %}<span></span>{% endif %}
+  </nav>
+  {% endif %}
+  {% else %}
+  <p class="empty">Aucune entreprise trouvée.</p>
+  {% endif %}
+</div>
+{% endblock %}

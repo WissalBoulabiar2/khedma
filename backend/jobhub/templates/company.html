@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_macros.html" import job_card, logo %}
+{% block title %}{{ company.name }} recrute — {{ jobs|length }} offre{{ 's' if jobs|length != 1 }} d'emploi | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="wrap page">
+  <nav class="crumbs" aria-label="Fil d'Ariane"><a href="/entreprises">Entreprises</a> › {{ company.name }}</nav>
+  <header class="company-head">
+    {{ logo(company, 'xl') }}
+    <div>
+      <h1>{{ company.name }}</h1>
+      <p class="company-head__links">
+        {% if company.website %}<a href="{{ company.website }}" target="_blank" rel="nofollow noopener noreferrer">{{ company.website.split('://')[-1].rstrip('/') }} ↗</a>{% else %}<span class="muted">Site web non renseigné</span>{% endif %}
+        {% if company.source_profile_url %}<a href="{{ company.source_profile_url }}" target="_blank" rel="nofollow noopener noreferrer">Profil sur la source ↗</a>{% endif %}
+      </p>
+    </div>
+  </header>
+
+  {% if company.description %}
+  <section class="block prose company-desc">{{ company.description|safe }}</section>
+  {% endif %}
+
+  <section class="section">
+    <div class="section__head">
+      <h2>Offres actives ({{ jobs|length }})</h2>
+      {% if jobs|length > 0 %}<a class="more" href="/emplois?company={{ company.slug }}">Filtrer ces offres →</a>{% endif %}
+    </div>
+    {% if jobs %}
+      <div class="joblist">{% for j in jobs %}{{ job_card(j, show_company=False) }}{% endfor %}</div>
+    {% else %}
+      <p class="empty">Aucune offre active pour le moment.</p>
+    {% endif %}
+  </section>
+
+  {% if past_jobs %}
+  <section class="section">
+    <div class="section__head"><h2>Offres récemment clôturées</h2></div>
+    <ul class="mini mini--past">
+      {% for j in past_jobs %}<li><a href="/emplois/{{ j.id }}-{{ j.slug }}">{{ j.title }}</a><span class="muted small">{{ j.location_label }} · {{ j.sort_date|frdate }}</span></li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

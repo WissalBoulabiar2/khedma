@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Sources et méthode | {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="wrap page">
+  <h1>Sources et méthode</h1>
+  <div class="prose intro">
+    <p>{{ SITE_NAME }} collecte automatiquement, toutes les deux heures, des offres d'emploi publiques publiées en Tunisie :
+      sites d'emploi tunisiens, pages carrières d'entreprises et plateformes de recrutement (ATS) comme Workable, Lever, Greenhouse ou Recruitee.</p>
+    <ul>
+      <li><strong>Accès respectueux.</strong> Nous respectons le fichier robots.txt et les conditions d'utilisation de chaque site, nous espaçons nos requêtes et nous ne contournons jamais une authentification ou une protection anti-robot. Un site qui refuse l'accès automatisé n'est pas collecté.</li>
+      <li><strong>Normalisation.</strong> Lieu (gouvernorat, ville), type de contrat, expérience, mode de travail, domaine et compétences sont harmonisés pour que les filtres fonctionnent de la même façon pour toutes les sources.</li>
+      <li><strong>Dédoublonnage.</strong> Une offre publiée sur plusieurs sites n'apparaît qu'une fois, avec toutes ses sources.</li>
+      <li><strong>Suivi.</strong> Une offre retirée de sa source, expirée ou trop ancienne est marquée comme clôturée.</li>
+      <li><strong>Lien d'origine.</strong> Chaque offre renvoie vers son annonce originale. Les candidatures se font directement chez le recruteur.</li>
+    </ul>
+    {% if stats.last_update %}<p class="muted">Dernière mise à jour réussie : {{ stats.last_update|frdate(True) }} à {{ stats.last_update.strftime('%H:%M') }} UTC.</p>{% endif %}
+  </div>
+
+  <div class="table-wrap">
+    <table class="sources">
+      <thead><tr><th scope="col">Source</th><th scope="col">Type</th><th scope="col">Offres actives</th><th scope="col">État</th><th scope="col">Dernière collecte</th></tr></thead>
+      <tbody>
+      {% for s in sources %}
+        <tr class="{{ '' if s.enabled else 'is-disabled' }}">
+          <td>{% if s.homepage %}<a href="{{ s.homepage }}" target="_blank" rel="nofollow noopener noreferrer">{{ s.name }}</a>{% else %}{{ s.name }}{% endif %}</td>
+          <td class="muted">{{ s.type }}</td>
+          <td>{{ s.active_offers|fmt_int }}</td>
+          <td>
+            {% if not s.enabled %}<span class="badge badge--off">Non collectée</span><div class="small muted">{{ s.disabled_reason }}</div>
+            {% elif s.last_status in ('success',) %}<span class="badge badge--ok">OK</span>
+            {% elif s.last_status == 'partial' %}<span class="badge badge--warn">Partielle</span>{% if s.last_error %}<div class="small muted">{{ s.last_error[:160] }}</div>{% endif %}
+            {% elif s.last_status in ('failed', 'blocked') %}<span class="badge badge--err">{{ 'Bloquée' if s.last_status == 'blocked' else 'Échec' }}</span>{% if s.last_error %}<div class="small muted">{{ s.last_error[:160] }}</div>{% endif %}
+            {% else %}<span class="badge">En attente</span>{% endif %}
+          </td>
+          <td class="small">
+            {% if s.last_run %}{{ s.last_run.started_at|frdate }} {{ s.last_run.started_at.strftime('%H:%M') }} UTC
+              <div class="muted">{{ s.last_run.seen }} vues · {{ s.last_run.created }} nouvelles · {{ s.last_run.closed }} clôturées</div>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

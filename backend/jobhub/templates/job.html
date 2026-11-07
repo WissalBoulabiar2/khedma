@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% from "_macros.html" import job_card, logo %}
+{% block title %}{{ job.title }}{% if job.company %} — {{ job.company.name }}{% endif %} — {{ job.location_label }} | {{ SITE_NAME }}{% endblock %}
+{% block description %}{{ job.title }}{% if job.company %} chez {{ job.company.name }}{% endif %} à {{ job.location_label }}. {{ job.description_text[:150] }}{% endblock %}
+{% block head %}
+  <link rel="canonical" href="{{ canonical_root or (request.url.scheme ~ '://' ~ request.url.netloc) }}/emplois/{{ job.id }}-{{ job.slug }}{{ '/' if static_mode }}">
+  {% if not job.is_active %}<meta name="robots" content="noindex">{% endif %}
+{% endblock %}
+{% block content %}
+<div class="wrap detail">
+  <nav class="crumbs" aria-label="Fil d'Ariane">
+    <a href="/emplois">Offres</a> ›
+    <a href="/emplois?domain={{ job.domain }}">{{ DOMAIN_LABELS[job.domain] }}</a>
+    {% if job.governorate %} › <a href="/emplois?domain={{ job.domain }}&governorate={{ job.governorate }}">{{ GOVERNORATES[job.governorate] }}</a>{% endif %}
+  </nav>
+
+  {% if not job.is_active %}
+  <div class="notice notice--closed" role="status">
+    Cette offre n'est plus publiée par sa source{% if job.closed_at %} (depuis le {{ job.closed_at|frdate(True) }}){% endif %}.
+    <a href="/emplois?specialization={{ job.specialization }}{% if job.governorate %}&governorate={{ job.governorate }}{% endif %}">Voir des offres similaires</a>
+  </div>
+  {% endif %}
+
+  <div class="detail__grid">
+    <article class="detail__main">
+      <header class="detail__head">
+        {{ logo(job.company, 'lg') }}
+        <div>
+          <h1>{{ job.title }}</h1>
+          <p class="detail__company">
+            {% if job.company %}<a href="/entreprises/{{ job.company.slug }}">{{ job.company.name }}</a>{% else %}Entreprise confidentielle{% endif %}
+            <span class="dot">{{ job.location_label }}</span>
+          </p>
+        </div>
+      </header>
+
+      <dl class="facts">
+        <div><dt>Lieu</dt><dd>{{ job.location_label }}</dd></div>
+        <div><dt>Contrat</dt><dd>{% if job.contract_list %}{% for c in job.contract_list %}{{ CONTRACT_TYPES[c] }}{{ ', ' if not loop.last }}{% endfor %}{% else %}Non précisé{% endif %}</dd></div>
+        <div><dt>Expérience</dt><dd>{% if job.experience_level %}{{ EXPERIENCE_LEVELS[job.experience_level] }}{% else %}Non précisée{% endif %}</dd></div>
+        <div><dt>Mode de travail</dt><dd>{{ WORKPLACES[job.workplace] if job.workplace else 'Non précisé' }}</dd></div>
+        <div><dt>Domaine</dt><dd><a href="/emplois?domain={{ job.domain }}&specialization={{ job.specialization }}">{{ SPECIALIZATION_LABELS.get(job.specialization) if job.specialization != 'autre' else DOMAIN_LABELS[job.domain] }}</a></dd></div>
+        <div><dt>Publiée le</dt><dd>{{ job.sort_date|frdate(True) }}</dd></div>
+        {% if job.education %}<div><dt>Niveau d'études</dt><dd>{{ job.education }}</dd></div>{% endif %}
+        {% if job.expires_at %}<div><dt>Date limite</dt><dd>{{ job.expires_at|frdate(True) }}</dd></div>{% endif %}
+      </dl>
+
+      {% if job.is_active %}
+      <div class="apply">
+        <a class="btn btn--primary btn--lg" href="{{ job.apply_url }}" target="_blank" rel="nofollow noopener noreferrer">Postuler sur le site d'origine ↗</a>
+        <p class="muted small">Vous serez redirigé vers l'annonce originale. {{ SITE_NAME }} ne reçoit aucune candidature.</p>
+      </div>
+      {% endif %}
+
+      {% if job.skills %}
+      <section class="block">
+        <h2>Compétences demandées</h2>
+        <ul class="skills">{% for s in job.skills %}<li><a href="/emplois?q={{ s|urlencode }}">{{ s }}</a></li>{% endfor %}</ul>
+      </section>
+      {% endif %}
+
+      <section class="block prose">
+        <h2>Description du poste</h2>
+        {% if job.description_html %}{{ job.description_html|safe }}{% else %}<p class="muted">La source ne fournit pas de description. Consultez l'annonce originale.</p>{% endif %}
+      </section>
+
+      <section class="block sources-list">
+        <h2>Source{{ 's' if listings|length > 1 }} de l'offre</h2>
+        <ul>
+          {% for l in listings %}
+          <li>
+            <a href="{{ l.url }}" target="_blank" rel="nofollow noopener noreferrer">{{ l.source.name }}</a>
+            <span class="muted small">vue le {{ l.first_seen_at|frdate }}{% if l.is_active %}, toujours en ligne (vérifié {{ l.last_seen_at|reldate }}){% else %}, retirée{% endif %}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+    </article>
+
+    <aside class="detail__side">
+      {% if job.company %}
+      <div class="card">
+        <div class="card__company">{{ logo(job.company) }}<strong>{{ job.company.name }}</strong></div>
+        {% if job.company.website %}<p><a href="{{ job.company.website }}" target="_blank" rel="nofollow noopener noreferrer">Site web ↗</a></p>{% endif %}
+        <p><a href="/entreprises/{{ job.company.slug }}">{{ job.company.active_jobs_count }} offre{{ 's' if job.company.active_jobs_count > 1 }} active{{ 's' if job.company.active_jobs_count > 1 }} →</a></p>
+      </div>
+      {% endif %}
+      {% if similar %}
+      <div class="card">
+        <h2 class="card__title">Offres similaires</h2>
+        <ul class="mini">
+          {% for s in similar %}
+          <li><a href="/emplois/{{ s.id }}-{{ s.slug }}">{{ s.title }}</a><span class="muted small">{{ s.company.name if s.company else '' }}{% if s.company %} · {% endif %}{{ s.location_label }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

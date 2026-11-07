@@ -1,0 +1,8 @@
+.venv
+.git
+.claude
+**/__pycache__
+**/*.pyc
+backend/data
+backend/tests
+backend/*.log
