@@ -1,0 +1,95 @@
+# Every 2 hours: collect new offers, save the database, rebuild the static
+# site and publish it on GitHub Pages. Free for public repositories.
+name: Collect jobs and publish site
+
+on:
+  schedule:
+    - cron: "17 */2 * * *"   # every 2 hours (minute 17: avoids the top-of-hour rush)
+  workflow_dispatch:          # "Run workflow" button in the Actions tab
+  push:
+    branches: [main]
+
+permissions:
+  contents: write   # save the database to the `data` branch
+  pages: write
+  id-token: write
+
+concurrency:
+  group: collect-and-publish
+  cancel-in-progress: false   # never interrupt a collection half-way
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install
+        run: pip install -r backend/requirements.txt
+
+      - name: Tests
+        if: github.event_name == 'push'
+        working-directory: backend
+        run: python -m pytest -q -p no:warnings
+
+      - name: Restore the database from the previous run
+        run: |
+          mkdir -p backend/data
+          if git fetch --quiet --depth=1 origin data 2>/dev/null; then
+            git show FETCH_HEAD:jobhub.db > backend/data/jobhub.db
+            echo "Database restored ($(du -h backend/data/jobhub.db | cut -f1))"
+          else
+            echo "No saved database yet: this is the first, full collection (about 15 minutes)."
+          fi
+
+      - name: Collect offers
+        working-directory: backend
+        env:
+          # Identify the crawler and point site owners to the sources page.
+          JOBHUB_USER_AGENT: "TunisieJobsBot/1.0 (job aggregator; respects robots.txt; +https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/sources/)"
+        # A failing source must not stop the publication; its status is shown on /sources.
+        run: python -m jobhub.cli collect || echo "::warning::Some sources failed. See the Sources page."
+
+      - name: Save the database (branch `data`)
+        run: |
+          python -m jobhub.cli export-db "$RUNNER_TEMP/db/jobhub.db"
+          cd "$RUNNER_TEMP/db"
+          git init --quiet
+          git checkout --quiet -b data
+          git add jobhub.db
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit --quiet -m "Database snapshot $(date -u +%FT%TZ)"
+          # Single-commit branch, force-pushed: the repository doesn't grow with each run.
+          git push --quiet --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data
+        working-directory: backend
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build the static site
+        working-directory: backend
+        run: >
+          python -m jobhub.cli build-static --out ../_site
+          --base-path "${{ steps.pages.outputs.base_path }}"
+          --site-url "${{ steps.pages.outputs.base_url }}"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
